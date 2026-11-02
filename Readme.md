@@ -44,7 +44,7 @@ You will gain deep expertise in building enterprise-grade CI/CD systems using Gi
 - Multi-Stage & Matrix Workflows
 - Automated Versioning & Releases
 - Custom GitHub Actions Development
-- Enterprise Best Practices
+- Enterprise Best Practices.
 
 ---
 

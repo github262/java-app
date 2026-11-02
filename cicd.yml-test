@@ -1,0 +1,86 @@
+# -name: BUILD-PUSH-DEPLOY
+#   on:
+#     push:
+#       branches: [ "main"]
+  
+#   jobs:
+#     BUILD-PUSH-DEPLOY:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v3
+
+#       - name: Set up JDK 21
+#         uses: actions/setup-java@v3
+#         with:
+#           distribution: "temurin"
+#           java-version: "21"
+#       - name: Build with Maven
+#         run: mvn -B package
+#       - name: Login to Dockerhub
+#         uses: ${{ secrets.DOCKERHUB_USERNAME }}
+#         with:
+#           username: ${{ secrets.DOCKERHUB_USERNAME }}
+#           password: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
+#       -name: Build Docker image
+#         run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/java-docker-app:latest .
+#       -name: Push Docker image
+#         run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/java-docker-app:latest
+#       -name: Deploy to EC2
+#         uses: appleboy/ssh-action@v1.1.0
+#         with:
+#           host: ${{ secrets.EC2_HOST }}
+#           username: ${{ secrets.EC2_USERNAME }}
+#           key: ${{ secrets.EC2_SSH_KEY }}
+#       -name: Pull on EC2
+#         script: |
+#           docker stop java-docker-app || true
+#           docker rm java-docker-app || true
+#           docker pull ${{ secrets.DOCKERHUB_USERNAME }}/java-docker-app:latest
+#           docker run -d -p 8080:8080 --name java-docker-app ${{ secrets.DOCKERHUB_USERNAME }}/java-docker-app:latest
+#           docker ps -a
+          
+
+# -name: BUILD-PUSH
+#   on:
+#     push:
+#       branches: [ "main" ]
+#     pull_request:
+#       branches: [ "main" ]
+#   jobs:
+#     build:
+#       runs-on: ubuntu-latest
+#       steps:
+#         - uses: actions/checkout@v3
+#         - name: Set up JDK 21
+#           uses: actions/setup-java@v3
+#           with:
+#             distribution: 'temurin'
+#             java-version: '21'
+#         - name: Build with Maven
+#           run: mvn clean package -DskipTests
+#         - name: Build and push Docker image
+#           uses: docker/build-push-action@v4
+#           with:
+#             context: .
+#             push: true
+#             tags: f.ullah/java-docker-app:latest
+#         -name: Deploy to Kubernetes
+#           uses: azure/k8s-deploy@v4
+#           with:
+#             manifests: |
+#               ./k8s/deployment.yaml
+#               ./k8s/service.yaml
+#             images: |
+#               f.ullah/java-docker-app:latest
+#         -name: Verify Deployment
+#           run: |
+#             kubectl rollout status deployment/java-docker-app-deployment
+#             kubectl get service java-docker-app-service
+#         -name: Test Application
+#           run: |
+#             SERVICE_IP=$(kubectl get service java-docker-app-service -o jsonpath='{.spec.clusterIP}')
+#             RESPONSE=$(curl -s http://$SERVICE_IP:8080)
+#             echo "Response from application: $RESPONSE"
+        
