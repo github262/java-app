@@ -83,4 +83,6 @@
 #             SERVICE_IP=$(kubectl get service java-docker-app-service -o jsonpath='{.spec.clusterIP}')
 #             RESPONSE=$(curl -s http://$SERVICE_IP:8080)
 #             echo "Response from application: $RESPONSE"
+
+#hi
         
