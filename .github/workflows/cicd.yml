@@ -50,6 +50,6 @@ jobs:
             docker rm java-docker-app || true
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/java-docker-app:latest
             docker run -d -p 8081:8080 --name java-docker-app ${{ secrets.DOCKERHUB_USERNAME }}/java-docker-app:latest
-            docker ps -a
+            docker ps -a #display all the docker images
 
       
